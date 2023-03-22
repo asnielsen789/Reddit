@@ -10,6 +10,12 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SQLite" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,8 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <None Remove="Context\" />
+    <None Remove="Services\" />
   </ItemGroup>
-
-
+  <ItemGroup>
+    <Folder Include="Context\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>
