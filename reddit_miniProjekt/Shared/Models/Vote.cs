@@ -11,6 +11,12 @@ namespace reddit_miniProjekt.Shared.Models
 		public Vote()
 		{
 		}
+		
+		public Vote(bool eval, User user)
+		{
+			Evaluation = eval;
+			User = user;
+		}
 	}
 }
 

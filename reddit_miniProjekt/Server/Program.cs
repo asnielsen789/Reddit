@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using reddit_miniProjekt.Server.Services;
 using reddit_miniProjekt.Server.Context;
+using reddit_miniProjekt.Shared.Models;
+using System.Threading;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+// Sætter CORS så API'en kan bruges fra andre domæner
+var AllowSomeStuff = "_AllowSomeStuff";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowSomeStuff, builder => {
+        builder.AllowAnyOrigin()
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
 
 
 // Tilføj DbContext factory som service.
@@ -19,6 +32,8 @@ builder.Services.AddDbContext<RedditContext>(options =>
 builder.Services.AddScoped<DataService>();
 
 var app = builder.Build();
+
+app.UseCors(AllowSomeStuff);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -52,10 +67,84 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
+///
+/// Minimal API
+/// 
+
+app.MapGet("/", (DataService service) =>
+{
+    return new { message = "Hello World!" };
+});
+
+app.MapGet("/api/threads", (DataService service) =>
+{
+    return service.GetRedditThreads();
+});
+
+app.MapGet("/api/thread/{id}", (DataService service, int id) =>
+{
+    return service.GetRedditThread(id);
+});
+
+app.MapPost("/api/thread", (DataService service, RedditThread redditThread) =>
+{
+    try
+    {
+        service.CreateRedditThread(redditThread);
+        //return service.GetRedditThreads().FirstOrDefault(redditThread);
+        return "thread created";
+    }
+    catch (Exception e)
+    {
+        return e.ToString();
+    }
+});
+
+app.MapPost("/api/comment/{threadId}", (DataService service, Comment comment, int threadId) =>
+{
+    try
+    {
+        var thread = service.GetRedditThread(threadId)!;
+        service.CreateComment(thread, comment);
+        return "comment created";
+    }
+    catch (Exception e)
+    {
+        return e.ToString();
+    }
+});
+
+app.MapPost("/api/votethread/{threadId}", (DataService service, Vote vote, int threadId) =>
+{
+    try
+    {
+        var thread = service.GetRedditThread(threadId)!;
+        service.CreateVote(thread, vote);
+        return "thread created";
+    }
+    catch (Exception e)
+    {
+        return e.ToString();
+    }
+});
+
+app.MapPost("/api/votecomment/{commentId}", (DataService service, Vote vote, int commentId) =>
+{
+    try
+    {
+        var comment = service.GetComment(commentId)!;
+        service.CreateVote(comment, vote);
+        return "vote created";
+    }
+    catch (Exception e)
+    {
+        return e.ToString();
+    }
+});
 
 app.Run();
 

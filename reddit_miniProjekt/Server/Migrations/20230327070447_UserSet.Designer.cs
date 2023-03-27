@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using reddit_miniProjekt.Server.Context;
 
@@ -10,9 +11,11 @@ using reddit_miniProjekt.Server.Context;
 namespace reddit_miniProjekt.Server.Migrations
 {
     [DbContext(typeof(RedditContext))]
-    partial class RedditContextModelSnapshot : ModelSnapshot
+    [Migration("20230327070447_UserSet")]
+    partial class UserSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
@@ -30,16 +33,11 @@ namespace reddit_miniProjekt.Server.Migrations
                     b.Property<long?>("RedditThreadId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("CommentId");
 
                     b.HasIndex("RedditThreadId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("reddit_miniProjekt.Shared.Models.RedditThread", b =>
@@ -115,14 +113,6 @@ namespace reddit_miniProjekt.Server.Migrations
                     b.HasOne("reddit_miniProjekt.Shared.Models.RedditThread", null)
                         .WithMany("Comments")
                         .HasForeignKey("RedditThreadId");
-
-                    b.HasOne("reddit_miniProjekt.Shared.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("reddit_miniProjekt.Shared.Models.RedditThread", b =>

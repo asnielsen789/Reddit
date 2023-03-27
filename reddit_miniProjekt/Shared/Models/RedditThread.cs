@@ -6,7 +6,7 @@ namespace reddit_miniProjekt.Shared.Models
         public long RedditThreadId { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-		public User User { get; }
+		public User User { get; set; }
 
 		public List<Vote> Votes { get; set; } = new List<Vote>();
 

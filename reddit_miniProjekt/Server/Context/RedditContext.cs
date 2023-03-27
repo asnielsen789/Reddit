@@ -9,6 +9,7 @@ namespace reddit_miniProjekt.Server.Context
     {
         public DbSet<RedditThread> Threads { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         public RedditContext(DbContextOptions<RedditContext> options) : base(options)
         {
@@ -20,6 +21,7 @@ namespace reddit_miniProjekt.Server.Context
         {
             modelBuilder.Entity<RedditThread>().ToTable("Threads");
             modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Comment>().ToTable("Comments");
         }
 
 

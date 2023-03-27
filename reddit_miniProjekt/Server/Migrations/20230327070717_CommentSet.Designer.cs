@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using reddit_miniProjekt.Server.Context;
 
@@ -10,9 +11,11 @@ using reddit_miniProjekt.Server.Context;
 namespace reddit_miniProjekt.Server.Migrations
 {
     [DbContext(typeof(RedditContext))]
-    partial class RedditContextModelSnapshot : ModelSnapshot
+    [Migration("20230327070717_CommentSet")]
+    partial class CommentSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
@@ -39,7 +42,7 @@ namespace reddit_miniProjekt.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("reddit_miniProjekt.Shared.Models.RedditThread", b =>
