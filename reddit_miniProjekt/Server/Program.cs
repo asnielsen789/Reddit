@@ -94,9 +94,8 @@ app.MapPost("/api/thread", (DataService service, RedditThread redditThread) =>
 {
     try
     {
-        service.CreateRedditThread(redditThread);
+        return service.CreateRedditThread(redditThread);
         //return service.GetRedditThreads().FirstOrDefault(redditThread);
-        return "thread created";
     }
     catch (Exception e)
     {
@@ -108,9 +107,7 @@ app.MapPost("/api/comment/{threadId}", (DataService service, Comment comment, in
 {
     try
     {
-        var thread = service.GetRedditThread(threadId)!;
-        service.CreateComment(thread, comment);
-        return "comment created";
+        return service.CreateComment(threadId, comment);
     }
     catch (Exception e)
     {
@@ -123,8 +120,7 @@ app.MapPost("/api/votethread/{threadId}", (DataService service, Vote vote, int t
     try
     {
         var thread = service.GetRedditThread(threadId)!;
-        service.CreateVote(thread, vote);
-        return "thread created";
+        return service.CreateVote(thread, vote);
     }
     catch (Exception e)
     {
@@ -137,8 +133,7 @@ app.MapPost("/api/votecomment/{commentId}", (DataService service, Vote vote, int
     try
     {
         var comment = service.GetComment(commentId)!;
-        service.CreateVote(comment, vote);
-        return "vote created";
+        return service.CreateVote(comment, vote);
     }
     catch (Exception e)
     {

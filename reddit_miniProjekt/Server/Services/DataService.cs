@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using reddit_miniProjekt.Shared.Models;
 using reddit_miniProjekt.Server.Context;
+using System.Threading;
 
 namespace reddit_miniProjekt.Server.Services
 {
@@ -73,6 +74,19 @@ namespace reddit_miniProjekt.Server.Services
             }
         }
 
+        public User? GetUser(int id)
+        {
+            try
+            {
+                return db.Users
+                    .FirstOrDefault(c => c.UserId == id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public Comment? GetComment(int id)
         {
             try
@@ -90,17 +104,19 @@ namespace reddit_miniProjekt.Server.Services
 
         public string CreateRedditThread(RedditThread redditThread)
         {
-            db.Threads.Add(redditThread);
+            var thread = new RedditThread(redditThread.Title, redditThread.Content, GetUser((int)redditThread.User.UserId)!);
+            db.Threads.Add(thread);
             db.SaveChanges();
             return "redditThread created";
         }
 
-        public string CreateComment(RedditThread redditThread, Comment comment)
+        public string CreateComment(int threadId, Comment comment)
         {
-            var thread = db.Threads.FirstOrDefault(redditThread);
+            var thread = db.Threads.FirstOrDefault(t => t.RedditThreadId == threadId); ;
             if (thread != null)
             {
-                thread.Comments.Add(comment);
+                var c = new Comment(comment.Content, GetUser((int)comment.User.UserId)!);
+                thread.Comments.Add(c);
                 db.SaveChanges();
                 return "comment created";
             }
@@ -112,10 +128,11 @@ namespace reddit_miniProjekt.Server.Services
 
         public string CreateVote(RedditThread redditThread, Vote vote)
         {
-            var thread = db.Threads.FirstOrDefault(redditThread);
+            var thread = db.Threads.FirstOrDefault(t => t.RedditThreadId == redditThread.RedditThreadId);
             if (thread != null)
             {
-                thread.Votes.Add(vote);
+                var v = new Vote(vote.Evaluation, GetUser((int)vote.User.UserId)!);
+                thread.Votes.Add(v);
                 db.SaveChanges();
                 return "vote created";
             }
@@ -127,10 +144,11 @@ namespace reddit_miniProjekt.Server.Services
         
         public string CreateVote(Comment comment, Vote vote)
         {
-            var c = db.Comments.FirstOrDefault(comment);
+            var c = db.Comments.FirstOrDefault(c => c.CommentId == comment.CommentId);
             if (c != null)
             {
-                c.Votes.Add(vote);
+                var v = new Vote(vote.Evaluation, GetUser((int)vote.User.UserId)!);
+                c.Votes.Add(v);
                 db.SaveChanges();
                 return "vote created";
             }
