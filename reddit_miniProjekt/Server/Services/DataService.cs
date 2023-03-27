@@ -26,14 +26,14 @@ namespace reddit_miniProjekt.Server.Services
                 User user1 = new User("Bob morgan");
                 User user2 = new User("Leasly Piers");
                 User user3 = new User("Peter Hansen");
-                db.Threads.Add(new RedditThread("EAAA","Det er fedt at gå i skole her", user1));
-                db.Threads.Add(new RedditThread("EAAA 3d", "Det er fedt at 3d printe", user2));
-                db.Threads.Add(new RedditThread("EAAA food", "Maden skal være billigere", user1));
-                db.Threads.Add(new RedditThread("EAAA indoor setting", "Bedre stole i klasserne", user1));
+                db.Threads.Add(new RedditThread("EAAA","Det er fedt at gå i skole her", DateTime.Now, user1));
+                db.Threads.Add(new RedditThread("EAAA 3d", "Det er fedt at 3d printe", DateTime.Now, user2));
+                db.Threads.Add(new RedditThread("EAAA food", "Maden skal være billigere", DateTime.Now, user1));
+                db.Threads.Add(new RedditThread("EAAA indoor setting", "Bedre stole i klasserne", DateTime.Now, user1));
                 db.SaveChanges();
                 var thread = db.Threads.FirstOrDefault()!;
-                thread.Comments.Add(new Comment("helt enig!", user2));
-                thread.Comments.Add(new Comment("Du har helt ret", user3));
+                thread.Comments.Add(new Comment("helt enig!", DateTime.Now, user2));
+                thread.Comments.Add(new Comment("Du har helt ret", DateTime.Now, user3));
                 db.SaveChanges();
                 thread.Votes.Add(new Vote(true, user2));
                 thread.Votes.Add(new Vote(false, user1));
@@ -104,7 +104,7 @@ namespace reddit_miniProjekt.Server.Services
 
         public string CreateRedditThread(RedditThread redditThread)
         {
-            var thread = new RedditThread(redditThread.Title, redditThread.Content, GetUser((int)redditThread.User.UserId)!);
+            var thread = new RedditThread(redditThread.Title, redditThread.Content, DateTime.Now, GetUser((int)redditThread.User.UserId)!);
             db.Threads.Add(thread);
             db.SaveChanges();
             return "redditThread created";
@@ -115,7 +115,7 @@ namespace reddit_miniProjekt.Server.Services
             var thread = db.Threads.FirstOrDefault(t => t.RedditThreadId == threadId); ;
             if (thread != null)
             {
-                var c = new Comment(comment.Content, GetUser((int)comment.User.UserId)!);
+                var c = new Comment(comment.Content, DateTime.Now, GetUser((int)comment.User.UserId)!);
                 thread.Comments.Add(c);
                 db.SaveChanges();
                 return "comment created";

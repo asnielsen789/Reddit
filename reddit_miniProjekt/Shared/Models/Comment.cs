@@ -1,10 +1,17 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 namespace reddit_miniProjekt.Shared.Models
 {
 	public class Comment
 	{
 		public long CommentId { get; set; }
         public string Content { get; set; }
+
+        [JsonIgnore]
+        public string createdAt { get; set; }
 
         public User User { get; set; }
         public List<Vote> Votes { get; set; } = new List<Vote>();
@@ -14,13 +21,25 @@ namespace reddit_miniProjekt.Shared.Models
 		{
 		}
 		
-		public Comment(string content, User user)
+		public Comment(string content, DateTime createAt, User user)
 		{
 			this.Content = content;
+			this.CreatedAt = createAt;
 			this.User = user;
 		}
-		
 
-	}
+        [NotMapped]
+        public DateTime CreatedAt
+        {
+            get
+            {
+                return DateTime.Parse(this.createdAt);
+            }
+            set
+            {
+                this.createdAt = value.ToString();
+            }
+        }
+    }
 }
 
