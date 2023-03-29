@@ -21,6 +21,7 @@ namespace reddit_miniProjekt.Shared.Models
 
         public RedditThread()
         {
+
         }
 
         public RedditThread(string title, string content, DateTime createdAt, User user)

@@ -65,20 +65,24 @@ namespace reddit_miniProjekt.Client.Services
         {
             string url = $"{baseAPI}/api/votethread/{threadId}";
 
-            Console.WriteLine("I'm here - voteThread/apiservice");
+            // Post JSON to API, save the HttpResponseMessage
+            HttpResponseMessage msg = await http.PostAsJsonAsync(url, vote);
+
+            // Get the JSON string from the response
+            string response = msg.Content.ReadAsStringAsync().Result;
+
+            // Return the updated post (vote increased)
+            return response;
+        }
+        public async Task<string> voteComment(int commentId, Vote vote)
+        {
+            string url = $"{baseAPI}/api/votecomment/{commentId}";
 
             // Post JSON to API, save the HttpResponseMessage
             HttpResponseMessage msg = await http.PostAsJsonAsync(url, vote);
 
             // Get the JSON string from the response
             string response = msg.Content.ReadAsStringAsync().Result;
-            /*
-            // Deserialize the JSON string to a Post object
-            string? response = JsonSerializer.Deserialize<string>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true // Ignore case when matching JSON properties to C# properties
-            });
-            */
 
             // Return the updated post (vote increased)
             return response;

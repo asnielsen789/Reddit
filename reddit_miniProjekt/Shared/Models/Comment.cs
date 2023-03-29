@@ -40,6 +40,25 @@ namespace reddit_miniProjekt.Shared.Models
                 this.createdAt = value.ToString();
             }
         }
+
+        public int calculateVotes()
+        {
+            int total = 0;
+            foreach (Vote vote in Votes)
+            {
+                if (vote.Evaluation == true)
+                {
+                    total++;
+                }
+                else
+                {
+                    total--;
+                }
+            }
+
+            return total;
+
+        }
     }
 }
 
