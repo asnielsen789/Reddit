@@ -128,6 +128,8 @@ namespace reddit_miniProjekt.Server.Services
 
         public string CreateVote(RedditThread redditThread, Vote vote)
         {
+            Console.WriteLine("I'm here - CreateVote/service");
+            
             var thread = db.Threads.FirstOrDefault(t => t.RedditThreadId == redditThread.RedditThreadId);
             if (thread != null)
             {

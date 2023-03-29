@@ -74,11 +74,12 @@ app.MapFallbackToFile("index.html");
 ///
 /// Minimal API
 /// 
-
+/*
 app.MapGet("/", (DataService service) =>
 {
     return new { message = "Hello World!" };
 });
+*/
 
 app.MapGet("/api/threads", (DataService service) =>
 {
@@ -128,8 +129,7 @@ app.MapPost("/api/votethread/{threadId}", (DataService service, Vote vote, int t
     }
 });
 
-app.MapPost("/api/votecomment/{commentId}", (DataService service, Vote vote, int commentId) =>
-{
+app.MapPost("/api/votecomment/{commentId}", (DataService service, Vote vote, int commentId) =>{
     try
     {
         var comment = service.GetComment(commentId)!;
