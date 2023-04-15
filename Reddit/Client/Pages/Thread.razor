@@ -1,0 +1,117 @@
+﻿@using Reddit.Shared.Models;
+@using Reddit.Client.Services;
+@using Reddit.Client.Pages;
+@using Microsoft.AspNetCore.Components;
+@inject ApiService apiService
+
+
+
+@page "/thread/{threadId:int}"
+
+@if (@thread == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h1>@thread.Title</h1>
+    <h3>@thread.Content</h3>
+    <p>Created at @thread.CreatedAt</p>
+    <p>Created by: @thread.User.Name</p>
+    <p>@thread.calculateVotes()</p>
+    <td><button @onclick="() => Upvote((int)thread.RedditThreadId)">Upvote</button></td>
+    <td><button @onclick="() => Downvote((int)thread.RedditThreadId)">Downvote</button></td>
+
+
+    <table>
+        <tr>
+            <th>Comment</th>
+            <th>Created at</th>
+            <th>Created by</th>
+            <th colspan="3">Votes</th>
+
+        </tr>
+        @foreach (Reddit.Shared.Models.Comment commentX in @thread.Comments)
+        {
+            <CommentRender comment=@commentX VoteCasted=@commentChanged></CommentRender>
+        }
+
+
+    </table>
+
+}
+
+<hr />
+
+<h3>Create new comment</h3>
+<h6>Insert Content</h6>
+<textarea @bind=@newComment.Content></textarea>
+<br>
+<h6>Insert username</h6>
+<input @bind=@newComment.User.Name type="text" />
+<br>
+<button @onclick="SubmitComment">Submit</button>
+
+
+
+
+
+
+
+@code{
+    [Parameter]
+    public int threadId { get; set; }
+    public RedditThread? thread { get; set; }
+    private Vote? vote;
+
+    private Comment newComment { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        thread = await apiService.GetThread(threadId);
+    }
+    protected override void OnInitialized()
+    {
+        newComment = new Comment();
+        newComment.User = new User("Mark Gurban");
+        newComment.User.UserId = 2;
+    }
+
+    private async Task Upvote(int id)
+    {
+
+        vote = new Vote(true, new User("Bob Dylan"));
+        vote.User.UserId = 1;
+
+        string response = await apiService.voteThread(id, vote);
+        thread = await apiService.GetThread(threadId);
+        Console.WriteLine(response);
+    }
+
+    private async Task Downvote(int id)
+    {
+        vote = new Vote(false, new User("Bob Dylan"));
+        vote.User.UserId = 1;
+
+        string response = await apiService.voteThread(id, vote);
+        thread = await apiService.GetThread(threadId);
+        Console.WriteLine(response);
+    }
+
+    private async Task commentChanged()
+    {
+        thread = await apiService.GetThread(threadId);
+    }
+
+    private async Task SubmitComment()
+    {
+        newComment.CreatedAt = DateTime.Now;
+        await apiService.CreateComment(newComment, threadId);
+        thread = await apiService.GetThread(threadId);
+
+
+        newComment = new Comment();
+        newComment.User = new User("Mark Gurban");
+        newComment.User.UserId = 2;
+    }
+}
