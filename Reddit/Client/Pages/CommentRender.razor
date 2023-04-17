@@ -8,8 +8,8 @@
     <td>@comment.CreatedAt</td>
     <td>@comment.User.Name</td>
     <td>@comment.calculateVotes()</td>
-    <td><button @onclick="() => Upvote((int)comment.CommentId)">Upvote</button></td>
-    <td><button @onclick="() => Downvote((int)comment.CommentId)">Downvote</button></td>
+    <td><button class="btn btn-success btn-sm" @onclick="() => Upvote((int)comment.CommentId)">Upvote</button></td>
+    <td><button class="btn btn-danger btn-sm" @onclick="() => Downvote((int)comment.CommentId)">Downvote</button></td>
 </tr>
 
 @code {
