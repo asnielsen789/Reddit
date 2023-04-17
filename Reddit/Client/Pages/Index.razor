@@ -1,10 +1,13 @@
 ﻿@page "/"
 @using Reddit.Shared.Models;
 @using Reddit.Client.Services;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject ApiService apiService
 
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
+
+@attribute [Authorize]
 
 @if (threads == null)
 {
@@ -65,8 +68,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        threads = await apiService.GetThreads();
-
+        try
+        {
+            threads = await apiService.GetThreads();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
     }
 
     protected override void OnInitialized()

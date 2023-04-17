@@ -1,12 +1,11 @@
-﻿@using Reddit.Shared.Models;
+﻿@page "/thread/{threadId:int}"
+
+@using Reddit.Shared.Models;
 @using Reddit.Client.Services;
 @using Reddit.Client.Pages;
 @using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject ApiService apiService
-
-
-
-@page "/thread/{threadId:int}"
 
 @if (@thread == null)
 {

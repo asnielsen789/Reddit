@@ -4,8 +4,28 @@ using Reddit.Server.Services;
 using Reddit.Server.Context;
 using Reddit.Shared.Models;
 using System.Threading;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, c =>
+    {
+        c.Authority = $"https://{builder.Configuration["Auth0:Domain"]}";
+        c.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidAudience = builder.Configuration["Auth0:Audience"],
+            ValidIssuer = $"https://{builder.Configuration["Auth0:Domain"]}"
+        };
+    });
+
+builder.Services.AddAuthorization(o =>
+{
+    o.AddPolicy("reddit:read-write", p => p.
+        RequireAuthenticatedUser().
+        RequireClaim("scope", "reddit:read-write"));
+});
 
 // Add services to the container.
 
@@ -32,6 +52,9 @@ builder.Services.AddDbContext<RedditContext>(options =>
 builder.Services.AddScoped<DataService>();
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseCors(AllowSomeStuff);
 
@@ -84,12 +107,12 @@ app.MapGet("/", (DataService service) =>
 app.MapGet("/api/threads", (DataService service) =>
 {
     return service.GetRedditThreads();
-});
+}).RequireAuthorization("reddit:read-write");
 
 app.MapGet("/api/thread/{id}", (DataService service, int id) =>
 {
     return service.GetRedditThread(id);
-});
+}).RequireAuthorization("reddit:read-write");
 
 app.MapPost("/api/thread", (DataService service, RedditThread redditThread) =>
 {
@@ -102,7 +125,7 @@ app.MapPost("/api/thread", (DataService service, RedditThread redditThread) =>
     {
         return e.ToString();
     }
-});
+}).RequireAuthorization("reddit:read-write");
 
 app.MapPost("/api/comment/{threadId}", (DataService service, Comment comment, int threadId) =>
 {
@@ -114,7 +137,7 @@ app.MapPost("/api/comment/{threadId}", (DataService service, Comment comment, in
     {
         return e.ToString();
     }
-});
+}).RequireAuthorization("reddit:read-write");
 
 app.MapPost("/api/votethread/{threadId}", (DataService service, Vote vote, int threadId) =>
 {
@@ -127,7 +150,7 @@ app.MapPost("/api/votethread/{threadId}", (DataService service, Vote vote, int t
     {
         return e.ToString();
     }
-});
+}).RequireAuthorization("reddit:read-write");
 
 app.MapPost("/api/votecomment/{commentId}", (DataService service, Vote vote, int commentId) =>{
     try
@@ -139,7 +162,7 @@ app.MapPost("/api/votecomment/{commentId}", (DataService service, Vote vote, int
     {
         return e.ToString();
     }
-});
+}).RequireAuthorization("reddit:read-write");
 
 app.Run();
 
