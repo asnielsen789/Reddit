@@ -34,7 +34,7 @@ else
                             The route is defined as "/post/{id}" and the id is the post id.
                         -->
                         <td><a href="/thread/@thread.RedditThreadId">@thread.Title</a></td>
-                        <td>@thread.Content</td>
+                        <td><p style="width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@thread.Content</p></td>
                         <td>@thread.CreatedAt</td>
                         <td>@thread.User.Name</td>
                         <td>@(thread.calculateVotes())</td>
