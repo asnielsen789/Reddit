@@ -23,9 +23,9 @@ namespace Reddit.Server.Services
             RedditThread redditThread = db.Threads.FirstOrDefault()!;
             if (redditThread == null)
             {
-                User user1 = new User("Bob morgan");
-                User user2 = new User("Leasly Piers");
-                User user3 = new User("Peter Hansen");
+                User user1 = new User("Bob morgan", "bob@mail.com");
+                User user2 = new User("Leasly Piers", "leasly@mail.com");
+                User user3 = new User("Peter Hansen", "peter@mail.com");
                 db.Threads.Add(new RedditThread("EAAA","Det er fedt at gå i skole her", DateTime.Now, user1));
                 db.Threads.Add(new RedditThread("EAAA 3d", "Det er fedt at 3d printe", DateTime.Now, user2));
                 db.Threads.Add(new RedditThread("EAAA food", "Maden skal være billigere", DateTime.Now, user1));
@@ -79,7 +79,20 @@ namespace Reddit.Server.Services
             try
             {
                 return db.Users
-                    .FirstOrDefault(c => c.UserId == id);
+                    .FirstOrDefault(u => u.UserId == id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public User? GetUser(string email)
+        {
+            try
+            {
+                return db.Users
+                    .FirstOrDefault(u => u.Email == email);
             }
             catch
             {
@@ -124,6 +137,19 @@ namespace Reddit.Server.Services
             {
                 return "no thread found";
             }
+        }
+
+        public string CreateUser(User user)
+        {
+            var existingUser = db.Users.FirstOrDefault(u => u.Email == user.Email);
+            if (existingUser != null)
+            {
+                return "User with that email already exists";
+            }
+            var newUser = new User(user.Name, user.Email);
+            db.Users.Add(user);
+            db.SaveChanges();
+            return "User created";
         }
 
         public string CreateVote(RedditThread redditThread, Vote vote)

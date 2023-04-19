@@ -1,0 +1,35 @@
+﻿@using Reddit.Shared.Models;
+@using Reddit.Client.Services;
+@using System.Text.Json;
+@inject ApiService apiService
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject NavigationManager NavManager
+
+@page "/signup"
+
+<h3>Sign Up</h3>
+
+<h6>Insert username</h6>
+<input @bind=@newUser.Name type="text" />
+<h6>Insert email</h6>
+<input @bind=@newUser.Email type="email" />
+<br>
+<button @onclick="SubmitUser">Submit</button>
+
+@code {
+    private User newUser { get; set; } = new User();
+
+    private async Task SubmitUser()
+    {
+        var response = await apiService.CreateUser(newUser);
+
+        if (response == "User created")
+        {
+            var user = await apiService.GetUser(newUser.Email);
+
+            await sessionStorage.SetItemAsync("User", JsonSerializer.Serialize(user));
+
+            NavManager.NavigateTo("/");
+        }
+    }
+}

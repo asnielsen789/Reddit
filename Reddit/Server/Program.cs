@@ -104,6 +104,24 @@ app.MapPost("/api/thread", (DataService service, RedditThread redditThread) =>
     }
 });
 
+app.MapPost("/api/user", (DataService service, User user) =>
+{
+    try
+    {
+        return service.CreateUser(user);
+        //return service.GetRedditThreads().FirstOrDefault(redditThread);
+    }
+    catch (Exception e)
+    {
+        return e.ToString();
+    }
+});
+
+app.MapGet("/api/user/{email}", (DataService service, string email) =>
+{
+    return service.GetUser(email);
+});
+
 app.MapPost("/api/comment/{threadId}", (DataService service, Comment comment, int threadId) =>
 {
     try

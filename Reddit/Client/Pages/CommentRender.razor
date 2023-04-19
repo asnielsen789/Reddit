@@ -1,7 +1,7 @@
 ﻿@using Reddit.Shared.Models;
 @using Reddit.Client.Services;
 @inject ApiService apiService;
-
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 <tr>
     <td>@comment.Content</td>
@@ -29,7 +29,7 @@
     private async Task Upvote(int id)
     {
 
-        vote = new Vote(true, new User("Bob Dylan"));
+        vote = new Vote(true, new User("Bob Dylan", "bob@mail.com"));
         vote.User.UserId = 1;
 
         string response = await apiService.voteComment(id, vote);
@@ -40,7 +40,7 @@
 
     private async Task Downvote(int id)
     {
-        vote = new Vote(false, new User("Bob Dylan"));
+        vote = new Vote(false, new User("Bob Dylan", "bob@mail.com"));
         vote.User.UserId = 1;
 
         string response = await apiService.voteComment(id, vote);

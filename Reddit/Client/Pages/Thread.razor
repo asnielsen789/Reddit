@@ -3,8 +3,7 @@
 @using Reddit.Client.Pages;
 @using Microsoft.AspNetCore.Components;
 @inject ApiService apiService
-
-
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 @page "/thread/{threadId:int}"
 
@@ -73,14 +72,14 @@ else
     protected override void OnInitialized()
     {
         newComment = new Comment();
-        newComment.User = new User("Mark Gurban");
+        newComment.User = new User("Mark Gurban", "mark@mail.com");
         newComment.User.UserId = 2;
     }
 
     private async Task Upvote(int id)
     {
 
-        vote = new Vote(true, new User("Bob Dylan"));
+        vote = new Vote(true, new User("Bob Dylan", "bob@mail.com"));
         vote.User.UserId = 1;
 
         string response = await apiService.voteThread(id, vote);
@@ -90,7 +89,7 @@ else
 
     private async Task Downvote(int id)
     {
-        vote = new Vote(false, new User("Bob Dylan"));
+        vote = new Vote(false, new User("Bob Dylan", "bob@mail.com"));
         vote.User.UserId = 1;
 
         string response = await apiService.voteThread(id, vote);
@@ -111,7 +110,7 @@ else
 
 
         newComment = new Comment();
-        newComment.User = new User("Mark Gurban");
+        newComment.User = new User("Mark Gurban", "mark@mail.com");
         newComment.User.UserId = 2;
     }
 }

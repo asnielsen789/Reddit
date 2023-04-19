@@ -55,10 +55,28 @@ namespace Reddit.Client.Services
             // Get the JSON string from the response
             string response = msg.Content.ReadAsStringAsync().Result;
 
-            
+            // Return the new comment 
+            return response;
+        }
+
+        public async Task<string> CreateUser(User user)
+        {
+            string url = $"{baseAPI}/api/user";
+
+            // Post JSON to API, save the HttpResponseMessage
+            HttpResponseMessage msg = await http.PostAsJsonAsync(url, user);
+
+            // Get the JSON string from the response
+            string response = msg.Content.ReadAsStringAsync().Result;
 
             // Return the new comment 
             return response;
+        }
+
+        public async Task<User> GetUser(string email)
+        {
+            string url = $"{baseAPI}/api/user/{email}";
+            return (await http.GetFromJsonAsync<User>(url))!;
         }
 
         public async Task<string> voteThread(int threadId, Vote vote)

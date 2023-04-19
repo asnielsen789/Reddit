@@ -1,7 +1,9 @@
 ﻿@page "/"
 @using Reddit.Shared.Models;
 @using Reddit.Client.Services;
+@using System.Text.Json;
 @inject ApiService apiService
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
@@ -62,24 +64,34 @@ else
 
     private RedditThread newThread { get; set; }
 
+    private User? currentUser { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         threads = await apiService.GetThreads();
+        var sessionString = await sessionStorage.GetItemAsync<string>("User");
 
+        if (sessionString != null && sessionString != "")
+        {
+            currentUser = JsonSerializer.Deserialize<User>(sessionString);
+        }
+        else
+        {
+            currentUser = null;
+        }
     }
 
     protected override void OnInitialized()
     {
+        //Name = "ID: " + await sessionStorage.GetItemAsync<string>("ID") + "Name : " + await sessionStorage.GetItemAsync<string>("Name");
         newThread = new RedditThread();
-        newThread.User = new User("Mark Gurban");
+        newThread.User = new User("Mark Gurban", "mark@mail.com");
         newThread.User.UserId = 2;
     }
 
     private async Task Upvote(int id)
     {
-
-        vote = new Vote(true, new User($"{newThread.User.Name}"));
+        vote = new Vote(true, new User($"{newThread.User.Name}", $"{newThread.User.Email}"));
         vote.User.UserId = 1;
 
         string response = await apiService.voteThread(id, vote);
@@ -89,7 +101,7 @@ else
 
     private async Task Downvote(int id)
     {
-        vote = new Vote(false, new User("Bob Dylan"));
+        vote = new Vote(false, new User("Bob Dylan", "bob@mail.com"));
         vote.User.UserId = 1;
 
         string response = await apiService.voteThread(id, vote);
@@ -104,7 +116,7 @@ else
         threads = await apiService.GetThreads();
 
         newThread = new RedditThread();
-        newThread.User = new User("Mark Gurban");
+        newThread.User = new User("Mark Gurban", "mark@mail.com");
         newThread.User.UserId = 2;
     }
 }
